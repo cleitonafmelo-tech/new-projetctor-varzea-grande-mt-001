@@ -35,13 +35,15 @@ _raw_pub = (os.environ.get("APP_PUBLIC_URL") or "").strip()
 # Só aceita uma URL http(s) real (ignora placeholders)
 APP_PUBLIC_URL = _raw_pub.rstrip("/") if _raw_pub.lower().startswith(("http://", "https://")) else ""
 EMAIL_LOGO_URL = os.environ.get("EMAIL_LOGO_URL", "")
+# E-mail de contato exibido no rodapé dos e-mails (mesmo do Reply-To)
+CONTATO_EMAIL = EMAIL_REPLY_TO or ""
 
 # Nome completo do concurso exibido no corpo do e-mail
 CONCURSO_NOME = "Processo Seletivo nº 001/2026 – SMECEL/VG/MT"
 ORGAO = "SMECEL - Várzea Grande - MT"
 ORGANIZADORA = "Concurso Várzea Grande - MT"
 EDITAL = "Processo Seletivo nº 001/2026/GS/SMECEL/VG/MT"
-PRAZO = "06/11/2026, às 23h59 (horário de Brasília)"
+PRAZO = "09/11/2026, às 23h59 (horário de Brasília)"
 
 
 def concurso_de(cargo: str):
@@ -235,9 +237,17 @@ def _shell(inner: str, base: str = "", cargo: str = "") -> str:
         f'<tr><td style="padding:30px 32px">{inner}</td></tr>'
         '<tr><td style="padding:18px 32px;border-top:1px solid #eeeeee;background:#fafafa">'
         '<p style="margin:0;font-size:11px;color:#7d8b82;line-height:1.6">'
-        f'Enviado por {escape(CONCURSO_NOME)}. Este é um e-mail automático de confirmação; não é necessário respondê-lo. '
+        f'Enviado por {escape(CONCURSO_NOME)}. Esta mensagem é automática. '
         'Por segurança, nunca solicitamos senha, código ou dados de cartão por e-mail.'
-        '</p></td></tr>'
+        '</p>'
+        + (
+            '<p style="margin:8px 0 0;font-size:11px;color:#7d8b82;line-height:1.6">'
+            f'Dúvidas? Fale com a gente em <a href="mailto:{escape(CONTATO_EMAIL)}" '
+            f'style="color:#1b3c82;text-decoration:none">{escape(CONTATO_EMAIL)}</a>.'
+            '</p>'
+            if CONTATO_EMAIL else ''
+        ) +
+        '</td></tr>'
         '<tr><td style="height:6px;background:#1b3c82;font-size:0;line-height:0">&nbsp;</td></tr>'
         '</table></td></tr></table>'
     )
@@ -378,7 +388,8 @@ def build_cadastro_email_html(*, nome: str, cpf: str, nascimento: str, email: st
         '</table>'
         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">'
         '<tr><td align="center" style="padding:28px 24px 8px;font-size:13px;color:#444;line-height:1.6">'
-        'Esta mensagem foi enviada de um endereço de e-mail exclusivo para notificações que não recebe e-mails. Portanto <strong>NÃO</strong> responda a esta mensagem.'
-        '<br><br>Enviado por <strong>Concurso Várzea Grande - MT.</strong></td></tr></table>'
+        'Esta mensagem é automática. Por segurança, nunca solicitamos senha, código ou dados de cartão por e-mail.'
+        + (f'<br><br>Dúvidas? Fale com a gente em <a href="mailto:{escape(CONTATO_EMAIL)}" style="color:#1b3c82;text-decoration:none">{escape(CONTATO_EMAIL)}</a>.' if CONTATO_EMAIL else '')
+        + '<br><br>Enviado por <strong>Concurso Várzea Grande - MT.</strong></td></tr></table>'
         '</td></tr></table>'
     )
