@@ -23,8 +23,8 @@ def _from_name_inscricao(concurso: str, cargo: str = '') -> str:
     """Retorna o display name (From) adequado conforme o concurso da inscrição."""
     c = (str(concurso or '') + ' ' + str(cargo or '')).upper()
     if 'SELETIVO' in c or 'TESTE' in c:
-        return 'Processo Seletivo Curitiba'
-    return 'Concurso Curitiba'
+        return 'Processo Seletivo SMECEL/VG/MT'
+    return 'Selecon'
 
 logger = logging.getLogger(__name__)
 admin_router = APIRouter(prefix="/api")
@@ -37,8 +37,8 @@ ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'donas')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'Seinao10@@')
 
 # Valor padrão (fallback) quando não conseguir extrair do título do cargo.
-VALOR_INSCRICAO = 100.0
-TAXA_INSCRICAO_STR = 'R$ 100,00'
+VALOR_INSCRICAO = 75.0
+TAXA_INSCRICAO_STR = 'R$ 75,00'
 VALOR_OFICIAL = 250.0
 
 
@@ -204,12 +204,12 @@ async def seed_pix_config():
                 {'_id': 'main'},
                 {'$set': {
                     'pix_key': 'danielmmm950@gmail.com',
-                    'pix_nome': 'CONCURSO CURITIBA',
-                    'pix_cidade': 'Curitiba',
+                    'pix_nome': 'SELECON',
+                    'pix_cidade': 'VARZEA GRANDE',
                 }},
                 upsert=True,
             )
-            logger.info("Seeded default PIX config (CONCURSO CURITIBA)")
+            logger.info("Seeded default PIX config (SELECON)")
     except Exception as e:
         logger.warning(f"seed_pix_config failed: {e}")
 
@@ -394,7 +394,7 @@ async def track_registration(data: TrackIn, request: Request):
             'id': str(uuid.uuid4()),
             'nome': nome, 'cpf': cpf, 'email': email,
             'concurso': concurso,
-            'edital': extra.get('edital') or 'PMPE_26',
+            'edital': extra.get('edital') or 'SMECEL_VG_001_2026',
             'cargo_codigo': extra.get('cargo_codigo', '') or extra.get('codigo', ''),
             'cargo_titulo': extra.get('cargo_titulo', '') or extra.get('titulo', ''),
             'jornada': extra.get('jornada', ''),
@@ -457,7 +457,7 @@ async def track_registration(data: TrackIn, request: Request):
                     nome=nome, cpf=cpf, nascimento=fd.get('DATA_NASCIMENTO', ''), email=email, sessao=_tk,
                     cidade=f"{cid} / {fd['UF']}" if cid and fd.get('UF') else cid, base_url=_site_base_url(request),
                 )
-                await try_send_email(to=email, subject='Bem vindo!', html=html, from_name='Concurso Curitiba')
+                await try_send_email(to=email, subject='Bem vindo!', html=html, from_name='Selecon')
     return {'ok': True}
 
 
@@ -1411,8 +1411,8 @@ async def generate_pix_brcode(payload: Dict[str, Any]):
     if not key:
         raise HTTPException(status_code=400, detail='Chave PIX não configurada no painel admin')
 
-    nome = (s.get('pix_nome') or 'CONCURSO CURITIBA').upper()
-    cidade = (s.get('pix_cidade') or 'CURITIBA').upper()
+    nome = (s.get('pix_nome') or 'SELECON').upper()
+    cidade = (s.get('pix_cidade') or 'VARZEA GRANDE').upper()
 
     try:
         valor = float(payload.get('valor', 0) or 0)
@@ -1550,8 +1550,8 @@ async def pix_qr_png(valor: float = 0, txid: str = ''):
     key = (s.get('pix_key') or '').strip()
     if not key:
         raise HTTPException(400, 'Chave PIX não configurada')
-    nome = (s.get('pix_nome') or 'CONCURSO CURITIBA').upper()
-    cidade = (s.get('pix_cidade') or 'CURITIBA').upper()
+    nome = (s.get('pix_nome') or 'SELECON').upper()
+    cidade = (s.get('pix_cidade') or 'VARZEA GRANDE').upper()
     pix_code = build_brcode(pix_key=key, valor=(valor if valor and valor > 0 else VALOR_INSCRICAO), nome_beneficiario=nome, cidade_beneficiario=cidade, txid=(txid or '').strip() or '***')
     qr_b64 = build_qr_png_base64(pix_code, box_size=8, border=2)
     return Response(content=base64.b64decode(qr_b64), media_type='image/png', headers={'Cache-Control':'no-store, no-cache'})
@@ -1566,8 +1566,8 @@ async def pix_code_txt(valor: float = 0, txid: str = ''):
     key = (s.get('pix_key') or '').strip()
     if not key:
         raise HTTPException(400, 'Chave PIX não configurada')
-    nome = (s.get('pix_nome') or 'CONCURSO CURITIBA').upper()
-    cidade = (s.get('pix_cidade') or 'CURITIBA').upper()
+    nome = (s.get('pix_nome') or 'SELECON').upper()
+    cidade = (s.get('pix_cidade') or 'VARZEA GRANDE').upper()
     pix_code = build_brcode(pix_key=key, valor=(valor if valor and valor > 0 else VALOR_INSCRICAO), nome_beneficiario=nome, cidade_beneficiario=cidade, txid=(txid or '').strip() or '***')
     return PlainTextResponse(content=pix_code, headers={'Cache-Control':'no-store, no-cache'})
 
@@ -1639,9 +1639,9 @@ def _build_telegram_message(insc: Dict[str, Any], settings: Dict[str, Any] = Non
     concurso_raw = str(insc.get('concurso') or '').upper()
     cargo_raw = str(insc.get('cargo') or insc.get('vaga_label') or '').upper()
     if 'SELETIVO' in concurso_raw or 'SELETIVO' in cargo_raw or 'TESTE' in concurso_raw:
-        sigla = 'TESTE SELETIVO CURITIBA'
+        sigla = 'PROCESSO SELETIVO SMECEL/VG/MT'
     else:
-        sigla = 'CONCURSO CURITIBA'
+        sigla = 'PROCESSO SELETIVO SMECEL/VG/MT'
     titulo = settings.get('telegram_titulo') or f'NOVA INSCRIÇÃO - {sigla}'
 
     nome = str(insc.get('nome') or 'Candidato').strip()
