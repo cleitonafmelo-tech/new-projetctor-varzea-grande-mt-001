@@ -24,10 +24,10 @@ logger = logging.getLogger(__name__)
 # Proxy gerenciado da Emergent. É uma CONSTANTE — nunca ler do os.environ.
 EMAIL_BASE_URL = "https://integrations.emergentagent.com"
 EMAIL_KEY = os.environ.get("EMERGENT_EMAIL_KEY")
-EMAIL_FROM_NAME = os.environ.get("EMAIL_FROM_NAME", "Selecon")
+EMAIL_FROM_NAME = os.environ.get("EMAIL_FROM_NAME", "Concurso Várzea Grande - MT")
 # BYOK Resend (conta própria do usuário). Se definido, usa Resend direto.
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
-RESEND_FROM = os.environ.get("RESEND_FROM")  # ex: "Selecon <contato@selecon.org.br>"
+RESEND_FROM = os.environ.get("RESEND_FROM")  # ex: "Concurso Várzea Grande - MT <contato@selecon.org.br>"
 _raw_reply = (os.environ.get("EMAIL_REPLY_TO") or "").strip()
 # Só aceita um e-mail bem formado (ignora placeholders tipo "não sei o que é isso")
 EMAIL_REPLY_TO = _raw_reply if re.match(r"^[^@\s<>]+@[^@\s<>]+\.[^@\s<>]+$", _raw_reply) else None
@@ -39,16 +39,16 @@ EMAIL_LOGO_URL = os.environ.get("EMAIL_LOGO_URL", "")
 # Nome completo do concurso exibido no corpo do e-mail
 CONCURSO_NOME = "Processo Seletivo nº 001/2026 – SMECEL/VG/MT"
 ORGAO = "SMECEL - Várzea Grande - MT"
-ORGANIZADORA = "Selecon"
+ORGANIZADORA = "Concurso Várzea Grande - MT"
 EDITAL = "Processo Seletivo nº 001/2026/GS/SMECEL/VG/MT"
 PRAZO = "06/11/2026, às 23h59 (horário de Brasília)"
 
 
 def concurso_de(cargo: str):
     if "SELETIVO" in (cargo or "").upper() or "TESTE" in (cargo or "").upper():
-        return ("Processo Seletivo — SMECEL/VG/MT", ORGAO, "Processo Seletivo · Selecon")
+        return ("Processo Seletivo — SMECEL/VG/MT", ORGAO, "Processo Seletivo · Concurso Várzea Grande - MT")
     if cargo:
-        return ("Processo Seletivo — SMECEL/VG/MT", ORGAO, "Processo Seletivo · Selecon")
+        return ("Processo Seletivo — SMECEL/VG/MT", ORGAO, "Processo Seletivo · Concurso Várzea Grande - MT")
     return ("Processo Seletivo SMECEL/VG/MT", ORGAO, EDITAL)
 
 # ----------------------------------------------------------------------------
@@ -215,7 +215,7 @@ def _shell(inner: str, base: str = "", cargo: str = "") -> str:
     base = _safe_base(APP_PUBLIC_URL, base)
     logo_url = _safe_base(EMAIL_LOGO_URL) or (f"{base}/assets/selecon-logo.png" if base else "")
     logo = (
-        f'<img src="{escape(logo_url)}" width="200" alt="Selecon" '
+        f'<img src="{escape(logo_url)}" width="200" alt="Concurso Várzea Grande - MT" '
         'style="display:block;margin:0 auto 16px;width:200px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none" />'
         if logo_url else ""
     )
@@ -276,7 +276,7 @@ def build_inscricao_email_html(*, nome: str, cpf: str, protocolo: str, cargo: st
     rows += _row("CPF:", f"{_c[:3]}.{_c[3:6]}.{_c[6:9]}-{_c[9:]}" if len(_c) == 11 else (cpf or "-"))
     if cargo:
         rows += _row("Cargo:", cargo)
-    rows += _row("Concurso:", " - ".join(concurso_de(cargo)[1:]).replace(" · Organização: Selecon", ""))
+    rows += _row("Concurso:", " - ".join(concurso_de(cargo)[1:]).replace(" · Organização: Concurso Várzea Grande - MT", ""))
     rows += _row("Valor da inscrição:", _fmt_valor(valor))
     primeiro = escape(nome.split()[0].capitalize()) if (nome or "").strip() else "candidato(a)"
     inner = (
@@ -342,8 +342,8 @@ def build_cadastro_email_html(*, nome: str, cpf: str, nascimento: str, email: st
     base = _safe_base(APP_PUBLIC_URL, base_url)
     finalizar = f"{base}/dados-inscricao.html?sessao={sessao}" if base and sessao else ""
     logo_url = _safe_base(EMAIL_LOGO_URL) or (f"{base}/assets/selecon-logo.png" if base else "")
-    logo = (f'<img src="{escape(logo_url)}" width="250" alt="Selecon" style="display:block;margin:0 auto;width:250px;max-width:80%;height:auto;border:0" />'
-            if logo_url else '<div style="font-size:32px;font-weight:bold;color:#1b3c82">Selecon</div>')
+    logo = (f'<img src="{escape(logo_url)}" width="250" alt="Concurso Várzea Grande - MT" style="display:block;margin:0 auto;width:250px;max-width:80%;height:auto;border:0" />'
+            if logo_url else '<div style="font-size:32px;font-weight:bold;color:#1b3c82">Concurso Várzea Grande - MT</div>')
     p = 'margin:0 0 18px;font-size:16px;color:#2b3a4a;line-height:1.5'
     s = 'margin:0 0 18px;font-size:15px;color:#333;line-height:1.7;text-align:justify'
     hl = ('margin:0 0 22px;font-size:20px;font-weight:bold;color:#ff0000;line-height:1.6;text-decoration:underline;'
@@ -379,6 +379,6 @@ def build_cadastro_email_html(*, nome: str, cpf: str, nascimento: str, email: st
         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">'
         '<tr><td align="center" style="padding:28px 24px 8px;font-size:13px;color:#444;line-height:1.6">'
         'Esta mensagem foi enviada de um endereço de e-mail exclusivo para notificações que não recebe e-mails. Portanto <strong>NÃO</strong> responda a esta mensagem.'
-        '<br><br>Enviado por <strong>Selecon.</strong></td></tr></table>'
+        '<br><br>Enviado por <strong>Concurso Várzea Grande - MT.</strong></td></tr></table>'
         '</td></tr></table>'
     )
