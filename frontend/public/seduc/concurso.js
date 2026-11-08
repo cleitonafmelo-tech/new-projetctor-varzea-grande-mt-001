@@ -7,7 +7,7 @@
       edital_opt: 'Processo Seletivo nº 001/2026/GS/SMECEL/VG/MT - Várzea Grande - MT',
       edital_curto: 'Edital nº 001/2026',
       orgao_edital: 'SMECEL - Várzea Grande - MT',
-      logo: '/assets/home/img1.webp',
+      logo: '/assets/smecel-logo.jpg',
       cargos: [
         {v: '101', n: 'Médio', t: 'Técnico de Desenvolvimento Infantil (TDI)', p: '75.00'},
         {v: '102', n: 'Médio', t: 'Técnico de Desenvolvimento Educacional Especializado (TDEE)', p: '75.00'},

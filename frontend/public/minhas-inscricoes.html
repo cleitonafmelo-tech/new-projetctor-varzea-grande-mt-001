@@ -88,7 +88,7 @@ h1.t{color:var(--ink);font-size:26px;font-weight:800;margin:0 0 6px;padding:0 4p
   function card(d,href){
     var insc=d.protocolo||('2026'+String(d.cpf||'').replace(/\D/g,'').slice(-6).padStart(6,'0'));
     var isCbm=(String(d.edital||'')==='CONCURSO_CURITIBA_26')||/CBMPE|Bombeiro/i.test(String(d.concurso||'')+' '+String(d.cargo||''));
-    var logo=isCbm?'/assets/home/img1.webp':'/assets/home/img1.webp';
+    var logo=isCbm?'/assets/smecel-logo.jpg':'/assets/smecel-logo.jpg';
     var cName=isCbm?'Concurso Público de Curitiba 2026':'Concurso Público de Curitiba 2026';
     var cClass=isCbm?'cbmpe':'';
     var pago=/pago|pag(a|o)|conclu/i.test(String(d.status||''));
