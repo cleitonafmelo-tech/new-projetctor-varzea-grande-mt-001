@@ -1,45 +1,37 @@
 (function(){
-  // Cidade(s) de prova — Curitiba/PR
-  var CIDADES = [['CURITIBA/PR', 'CURITIBA/PR']];
+  // Cidade(s) de prova — Várzea Grande/MT
+  var CIDADES = [['VÁRZEA GRANDE/MT', 'VÁRZEA GRANDE/MT']];
   var C = {
-    curitiba_concurso: {
-      titulo: 'Concurso Público de Curitiba 2026', sigla: 'PMC', orgao: 'Prefeitura Municipal de Curitiba',
-      edital_opt: 'Concurso Público do Município de Curitiba - PR',
-      edital_curto: 'Editais nº 04, 05 e 06/2026',
-      orgao_edital: 'Prefeitura Municipal de Curitiba - PR',
+    smecel_vg: {
+      titulo: 'Processo Seletivo nº 001/2026 – SMECEL/VG/MT', sigla: 'SMECEL', orgao: 'Secretaria Municipal de Educação, Cultura, Esportes e Lazer de Várzea Grande',
+      edital_opt: 'Processo Seletivo nº 001/2026/GS/SMECEL/VG/MT - Várzea Grande - MT',
+      edital_curto: 'Edital nº 001/2026',
+      orgao_edital: 'SMECEL - Várzea Grande - MT',
       logo: '/assets/home/img1.webp',
       cargos: [
-        {v: '101', n: 'Médio/Técnico', t: 'Agente Administrativo', p: '100.00'},
-        {v: '102', n: 'Médio/Técnico', t: 'Fiscal', p: '100.00'},
-        {v: '103', n: 'Médio/Técnico', t: 'Fiscal de Obras e Posturas', p: '100.00'},
-        {v: '201', n: 'Superior', t: 'Analista Administrativo', p: '150.00'},
-        {v: '202', n: 'Superior', t: 'Analista de Finanças', p: '150.00'},
-        {v: '203', n: 'Superior', t: 'Assistente Social', p: '150.00'},
-        {v: '204', n: 'Superior', t: 'Auditor Fiscal de Tributos Municipais', p: '150.00'},
-        {v: '205', n: 'Superior', t: 'Contador', p: '150.00'},
-        {v: '206', n: 'Superior', t: 'Engenheiro Civil', p: '150.00'},
-        {v: '301', n: 'Carreira Jurídica', t: 'Procurador do Município', p: '250.00'}
+        {v: '101', n: 'Médio', t: 'Técnico de Desenvolvimento Infantil (TDI)', p: '90.00'},
+        {v: '102', n: 'Médio', t: 'Técnico de Desenvolvimento Educacional Especializado (TDEE)', p: '90.00'},
+        {v: '103', n: 'Médio', t: 'Agente Administrativo (TAE)', p: '90.00'},
+        {v: '104', n: 'Médio', t: 'Técnico em Nutrição Escolar (TNE)', p: '90.00'},
+        {v: '105', n: 'Médio', t: 'Técnico de Manutenção da Infraestrutura e Higienização Escolar (TMIHE)', p: '90.00'},
+        {v: '106', n: 'Médio', t: 'Transporte Escolar - Motorista CNH D (TSAE)', p: '90.00'},
+        {v: '201', n: 'Superior', t: 'Professor - Pedagogia', p: '120.00'},
+        {v: '202', n: 'Superior', t: 'Professor - Artes', p: '120.00'},
+        {v: '203', n: 'Superior', t: 'Professor - Educação Física', p: '120.00'},
+        {v: '204', n: 'Superior', t: 'Professor - Letras/Língua Inglesa', p: '120.00'},
+        {v: '205', n: 'Superior', t: 'Professor - Letras/Língua Portuguesa', p: '120.00'},
+        {v: '206', n: 'Superior', t: 'Professor - Matemática', p: '120.00'},
+        {v: '207', n: 'Superior', t: 'Professor - História', p: '120.00'},
+        {v: '208', n: 'Superior', t: 'Professor - Geografia', p: '120.00'},
+        {v: '209', n: 'Superior', t: 'Professor - Ciências', p: '120.00'}
       ],
-      pagina: '/termos-concurso.html'
-    },
-    curitiba_seletivo: {
-      titulo: 'Processo Seletivo Simplificado (PSS) de Curitiba 2026', sigla: 'PSS', orgao: 'Prefeitura Municipal de Curitiba',
-      edital_opt: 'Processo Seletivo Simplificado (PSS) do Município de Curitiba - PR',
-      edital_curto: 'PSS 2026 - Contratações temporárias',
-      orgao_edital: 'Prefeitura Municipal de Curitiba - PR',
-      logo: '/assets/home/img1.webp',
-      cargos: [
-        {v: '501', n: 'Médio', t: 'Agente Administrativo', p: '50.00'},
-        {v: '502', n: 'Superior', t: 'Contador', p: '50.00'},
-        {v: '503', n: 'Superior', t: 'Engenheiro Civil', p: '50.00'}
-      ],
-      pagina: '/termos-seletivo.html'
+      pagina: '/termos.html'
     }
   };
   // Aliases aceitos na URL (?c=...)
-  var ALIAS = {concurso: 'curitiba_concurso', seletivo: 'curitiba_seletivo', pss: 'curitiba_seletivo', curitiba: 'curitiba_concurso'};
+  var ALIAS = {smecel: 'smecel_vg', vg: 'smecel_vg', concurso: 'smecel_vg', seletivo: 'smecel_vg', pss: 'smecel_vg', curitiba: 'smecel_vg', curitiba_concurso: 'smecel_vg', curitiba_seletivo: 'smecel_vg'};
   function norm(k){ k = (ALIAS[k] || k); return C[k] ? k : ''; }
-  var key = 'curitiba_concurso';
+  var key = 'smecel_vg';
   try {
     var q = norm(new URLSearchParams(location.search).get('c') || '');
     if (q) { key = q; localStorage.setItem('concurso_sel', q); }
@@ -92,10 +84,10 @@
     if (mp && !mp.dataset.cfg) {
       mp.dataset.cfg = key;
       var prev = mp.value;
-      mp.innerHTML = '<option value="">Selecione</option>' + CIDADES.map(function(c){ return '<option value="' + c[0] + '" data-uf="PR">' + c[1] + '</option>'; }).join('');
+      mp.innerHTML = '<option value="">Selecione</option>' + CIDADES.map(function(c){ return '<option value="' + c[0] + '" data-uf="MT">' + c[1] + '</option>'; }).join('');
       if (CIDADES.some(function(c){ return c[0] === prev; })) mp.value = prev;
     }
-    var uf = document.getElementById('UF_PROVA'); if (uf) uf.value = 'PR';
+    var uf = document.getElementById('UF_PROVA'); if (uf) uf.value = 'MT';
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fill); else fill();
   // Formulário multi-etapas: o campo #VAGA pode ser injetado só ao avançar de etapa.
