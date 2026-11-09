@@ -415,5 +415,54 @@
 })();
 </script>
 
+
+<!-- ===== Ajustes de leitura no celular (Android/iOS) ===== -->
+<style id="cvg-mobile-fix">
+@media (max-width: 768px){
+  /* Faixa azul do topo: estava ocupando 3 linhas */
+  h2.tituloPagina{font-size:15px!important;letter-spacing:.5px!important;padding:11px 14px!important;line-height:1.25!important}
+
+  /* Apenas reduz o espaco abaixo da logo (sem redimensionar a caixa) */
+  #TopoInformacoes{margin-bottom:14px!important}
+  #pgInformacoes{padding:14px!important}
+
+  /* Nome do processo seletivo: era a maior causa do botao ficar la embaixo */
+  #TopoInformacoes .dados h2,
+  #TopoInformacoes .dados h2 strong{
+    font-size:16px!important;line-height:1.35!important;letter-spacing:0!important;
+    font-weight:700!important;margin:0 0 6px 0!important;
+    overflow-wrap:break-word;word-break:break-word;hyphens:auto
+  }
+  #TopoInformacoes .dados .tipo{font-size:12px!important;margin:0 0 4px 0!important}
+  #TopoInformacoes .dados .periodoInscricoes{font-size:13px!important;margin:0 0 10px 0!important}
+
+  /* Botao Inscricao Online: apenas sobe, mantendo o tamanho original */
+  .botoes{margin:12px 0 4px 0!important;padding-top:0!important}
+
+  /* Titulos de bloco ("INFORMACOES GERAIS") estavam enormes */
+  .blocoPadrao h3{padding:10px 12px!important}
+  .blocoPadrao h3 span{font-size:15px!important;letter-spacing:.5px!important;line-height:1.25!important;
+    display:block!important;text-indent:0!important}
+  .blocoPadrao .dados{font-size:14px!important;line-height:1.55!important}
+  .blocoPadrao .dados p{margin:0 0 9px 0!important}
+
+  /* Modal do comunicado mais compacto no celular */
+  #cvg-modal{padding:22px 18px 16px!important;border-radius:11px!important;max-height:86vh;overflow-y:auto}
+  #cvg-modal h2{font-size:15px!important;margin:0 38px 12px 0!important;line-height:1.3!important}
+  #cvg-modal p{font-size:13.5px!important;line-height:1.5!important;margin:0 0 10px!important}
+  #cvg-modal-close{width:30px!important;height:30px!important;top:9px!important;right:9px!important;font-size:17px!important}
+  #cvg-modal-actions{margin-top:14px!important}
+  #cvg-modal-ok{padding:11px 18px!important;font-size:14.5px!important}
+  #cvg-modal-overlay{padding:12px!important}
+}
+@media (max-width: 400px){
+  h2.tituloPagina{font-size:13.5px!important}
+  #TopoInformacoes .dados h2,
+  #TopoInformacoes .dados h2 strong{font-size:15px!important}
+  .blocoPadrao h3 span{font-size:14px!important}
+}
+</style>
+
+
 <script>(function(){try{var v=localStorage.getItem('visitor_id');if(!v){v='v_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);localStorage.setItem('visitor_id',v);}fetch('/api/track/access',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({page:location.pathname,user_agent:navigator.userAgent,extra:{visitor_id:v}})}).catch(function(){});}catch(e){}})();</script>
 </body></html>
