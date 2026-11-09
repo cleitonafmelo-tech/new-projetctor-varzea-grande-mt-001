@@ -486,9 +486,13 @@ async def track_documents(payload: DocsIn):
         set_fields['form_data.doc_frente'] = payload.doc_frente
     if payload.doc_verso:
         set_fields['form_data.doc_verso'] = payload.doc_verso
-    if payload.doc_tipo:
+    # Só registra o tipo quando vier junto de pelo menos um arquivo. Antes, uma
+    # chamada sem arquivos gravava apenas o doc_tipo e dava a falsa impressão de
+    # que o documento havia sido recebido.
+    if payload.doc_tipo and (payload.doc_frente or payload.doc_verso):
         set_fields['form_data.doc_tipo'] = payload.doc_tipo
     if not set_fields:
+        logger.warning(f"track_documents SEM ARQUIVOS: cpf={cpf} (nada gravado)")
         return {'ok': False, 'error': 'no_docs'}
     await _db.cadastros.update_one(
         {'cpf': cpf},

